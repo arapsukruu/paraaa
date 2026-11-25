@@ -1,0 +1,166 @@
+{
+  "source": "gateio_usdt_perpetual_5m",
+  "days": 32,
+  "symbols": {
+    "BTCUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 3718,
+      "funding_events": 90
+    },
+    "XRPUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 888,
+      "funding_events": 90
+    },
+    "BNBUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 390,
+      "funding_events": 89
+    },
+    "ETHUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 4628,
+      "funding_events": 89
+    },
+    "SOLUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 1303,
+      "funding_events": 90
+    },
+    "LINKUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 234,
+      "funding_events": 90
+    },
+    "AVAXUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 287,
+      "funding_events": 90
+    },
+    "APTUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 250,
+      "funding_events": 90
+    },
+    "SUIUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 454,
+      "funding_events": 89
+    },
+    "NEARUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 853,
+      "funding_events": 90
+    },
+    "ADAUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 334,
+      "funding_events": 90
+    },
+    "AAVEUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 326,
+      "funding_events": 90
+    },
+    "UNIUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 548,
+      "funding_events": 90
+    },
+    "ARBUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 292,
+      "funding_events": 90
+    },
+    "OPUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 140,
+      "funding_events": 90
+    },
+    "DOGEUSDT": {
+      "rows": 9217,
+      "start": "2026-10-22 10:25:00+00:00",
+      "end": "2026-11-23 10:25:00+00:00",
+      "spot_cov_pct": 100.0,
+      "oi_cov_pct": 100.0,
+      "lsr_cov_pct": 100.0,
+      "liq_events": 1100,
+      "funding_events": 90
+    }
+  }
+}

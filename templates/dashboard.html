@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quant Lab · CORE_OI_CASCADE Canlı Demo Bot (5.000 USDT)</title>
+  <style>
+    :root {
+      --bg: #060b16;
+      --card: #0d1526;
+      --card2: #111c33;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.12);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.14);
+      --blue: #38bdf8;
+      --blue-bg: rgba(56, 189, 248, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 18px 22px 40px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.2px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .pill-live { background: var(--green-bg); color: var(--green); border-color: rgba(34,197,94,0.3); }
+    .pill-boot { background: var(--amber-bg); color: var(--amber); border-color: rgba(245,158,11,0.35); }
+    .pill-paused { background: var(--red-bg); color: var(--red); border-color: rgba(239,68,68,0.35); }
+    .pill-regime { background: var(--blue-bg); color: var(--blue); border-color: rgba(56,189,248,0.3); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    button {
+      background: var(--card2);
+      color: var(--text);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover { background: #1e293b; border-color: #475569; }
+    button.btn-primary { background: #0284c7; border-color: #0ea5e9; color: #fff; }
+    button.btn-primary:hover { background: #0369a1; }
+    button.btn-danger { background: rgba(239,68,68,0.14); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+    button.btn-danger:hover { background: rgba(239,68,68,0.28); }
+    button.btn-sm { padding: 3px 8px; font-size: 11px; }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 1150px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 650px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 15px;
+    }
+    .kpi .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .kpi .val { font-size: 21px; font-weight: 700; margin-top: 5px; }
+    .kpi .sub { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px 17px;
+      margin-bottom: 16px;
+    }
+    .sec-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+    .sec-hdr h2 { margin: 0; font-size: 14.5px; font-weight: 700; }
+    .sec-hdr .hint { font-size: 11.5px; color: var(--muted); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 1000px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.2px; }
+    th, td { padding: 8px 9px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: var(--card2); color: #cbd5e1; font-weight: 600; font-size: 11.5px; }
+    tbody tr:hover { background: rgba(30, 41, 59, 0.45); }
+
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+    .amb { color: var(--amber); }
+    .muted { color: var(--muted); }
+
+    .side-long { background: var(--green-bg); color: var(--green); padding: 2px 7px; border-radius: 5px; font-weight: 700; font-size: 11px; }
+    .side-short { background: var(--red-bg); color: var(--red); padding: 2px 7px; border-radius: 5px; font-weight: 700; font-size: 11px; }
+
+    .prog-track { width: 110px; height: 7px; background: #1e293b; border-radius: 4px; position: relative; display: inline-block; vertical-align: middle; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+
+    .ready-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 11px; }
+    .r-0, .r-1, .r-2 { background: #1e293b; color: #94a3b8; }
+    .r-3 { background: var(--blue-bg); color: var(--blue); }
+    .r-4 { background: var(--amber-bg); color: var(--amber); }
+    .r-5 { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.45); }
+
+    .log-box {
+      height: 205px;
+      overflow-y: auto;
+      background: #070d1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+    }
+    .log-row { padding: 3px 0; border-bottom: 1px dashed rgba(30,41,59,0.6); display: flex; gap: 8px; }
+    .log-ts { color: var(--dim); flex-shrink: 0; }
+    .log-tag { font-weight: 700; flex-shrink: 0; width: 58px; }
+    .tag-OPEN { color: var(--blue); }
+    .tag-CLOSE { color: var(--green); }
+    .tag-LOSS { color: var(--red); }
+    .tag-SCAN { color: var(--muted); }
+    .tag-SYS { color: var(--amber); }
+
+    .banner {
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 12.5px;
+      display: none;
+    }
+    .banner-info { background: var(--amber-bg); border: 1px solid rgba(245,158,11,0.35); color: #fde68a; }
+    .banner-cb { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.45); color: #fecaca; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <h1>CORE_OI_CASCADE · Canlı Otomatik Demo Bot</h1>
+      <span id="statusPill" class="pill pill-boot"><span class="dot"></span> Başlatılıyor...</span>
+      <span id="regimePill" class="pill pill-regime">BTC 24s Rejim: --</span>
+      <span id="countdownTxt" class="muted mono" style="font-size:12px;">Sonraki 5dk Tarama: --</span>
+    </div>
+    <div class="controls">
+      <button id="tgBtn" onclick="testTelegram()">Telegram Test</button>
+      <button class="btn-primary" onclick="apiPost('/api/scan-now')">Şimdi Tara</button>
+      <button id="pauseBtn" onclick="togglePause()">Duraklat</button>
+      <button class="btn-danger" onclick="resetDemo()">5.000$ Sıfırla</button>
+    </div>
+  </div>
+
+  <div id="bootBanner" class="banner banner-info">
+    Gate.io üzerinden 16 paritenin son 36 saatlik Vadeli + Spot + Open Interest + Gerçek Tasfiye geçmişi yükleniyor (~15-20 sn). Yüklendikten sonra otomatik alım-satım başlayacak...
+  </div>
+  <div id="cbBanner" class="banner banner-cb">
+    GÜNLÜK DRAWDOWN DEVRE KESİCİ AKTİF (-2.5%): Bugün yeni pozisyon açılışı otomatik olarak durduruldu.
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="lbl">Toplam Demo Varlık</div>
+      <div id="kpiTotalEq" class="val mono">5,000.00 $</div>
+      <div id="kpiRet" class="sub mono">Başlangıç: 5,000.00 $ (0.00%)</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Anlık Açık PnL</div>
+      <div id="kpiUnreal" class="val mono">0.00 $</div>
+      <div id="kpiUnrealSub" class="sub mono">0 açık pozisyon</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Bugünkü Gerçekleşen</div>
+      <div id="kpiToday" class="val mono">0.00 $</div>
+      <div id="kpiTodaySub" class="sub mono">Devre Kesici: -2.50%</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Kazanma Oranı / PF</div>
+      <div id="kpiWrPf" class="val mono">0.0% / 0.00</div>
+      <div id="kpiCounts" class="sub mono">0 işlem (0 Kâr / 0 Zarar)</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Pozisyon &amp; Maruziyet</div>
+      <div id="kpiExp" class="val mono">0 / 6</div>
+      <div id="kpiExpSub" class="sub mono">Brüt Kaldıraç: 0.00x / 1.35x</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Max Drawdown</div>
+      <div id="kpiDD" class="val mono neg">0.00%</div>
+      <div id="kpiPeak" class="sub mono">Zirve: 5,000.00 $</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr">
+      <h2>Açık Demo Pozisyonlar <span id="openCountBadge" class="muted">(0/6)</span></h2>
+      <span class="hint">Canlı fiyatlar 5 saniyede bir Gate.io'dan güncellenir · TP/SL anlık tetiklenir</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Parite</th><th>Yön</th><th>Giriş</th><th>Anlık Fiyat</th><th>TP Hedef</th><th>SL Stop</th>
+            <th>Büyüklük ($)</th><th>TP/SL Konum</th><th>Anlık PnL</th><th>Kalan Süre</th><th>Sinyal Gerekçesi</th><th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="openBody">
+          <tr><td colspan="12" style="text-align:center" class="muted">Henüz açık pozisyon yok.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section" style="margin-bottom:0">
+      <div class="sec-hdr">
+        <h2>Demo Hesap Sermaye Eğrisi (5.000 USDT)</h2>
+        <span id="eqStats" class="hint mono">Gerçekleşen: 5,000.00 USDT</span>
+      </div>
+      <div id="eqSvgWrap" style="min-height:205px"></div>
+    </div>
+    <div class="section" style="margin-bottom:0">
+      <div class="sec-hdr">
+        <h2>Canlı Bot Aktivite Günlüğü</h2>
+        <span id="lastTickTxt" class="hint mono">Son fiyat: --</span>
+      </div>
+      <div id="logBox" class="log-box mono"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr">
+      <h2>16 Parite Canlı Mikroyapı &amp; Tasfiye Radarı</h2>
+      <span class="hint">Otomatik Giriş Kapıları: <b>OI 15dk &le; -0.55%</b> · <b>|Tasfiye Z| &ge; 1.4</b> · <b>Parite DNA (VR) &ge; 0.68</b> · <b>Vol 4s &ge; 12 bp</b> · <b>Hacim &ge; 1.4x</b></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Parite</th><th>Canlı Fiyat</th><th>15dk %</th><th>OI 15dk %</th><th>Tasfiye Z</th>
+            <th>DNA (VR)</th><th>Vol 4s (bp)</th><th>Perp OFI</th><th>Hacim Artışı</th><th>Hazırlık</th>
+          </tr>
+        </thead>
+        <tbody id="radarBody">
+          <tr><td colspan="10" style="text-align:center" class="muted">Veriler yükleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr">
+      <h2>Kapanan Demo İşlemler (Hibrit Maliyet + Funding Dahil)</h2>
+      <span class="hint">Giriş: 8 bps (Taker+Kayma) · TP Çıkış: 2 bps (Maker Limit) · SL/Süre Çıkış: 7 bps</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kapanış (UTC)</th><th>Parite</th><th>Yön</th><th>Giriş</th><th>Çıkış</th><th>Büyüklük</th>
+            <th>Süre</th><th>Çıkış Tipi</th><th>Net (bps)</th><th>Net PnL ($)</th><th>Bakiye ($)</th>
+          </tr>
+        </thead>
+        <tbody id="closedBody">
+          <tr><td colspan="11" style="text-align:center" class="muted">Henüz kapanan işlem yok — ilk sinyal yakalandığında burada listelenecek.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let latestState = null;
+
+    function fmtNum(v, dec=2) {
+      if (v === null || v === undefined || Number.isNaN(Number(v))) return "--";
+      return Number(v).toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    }
+    function fmtPx(v) {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return "--";
+      if (n >= 1000) return n.toFixed(2);
+      if (n >= 10) return n.toFixed(3);
+      if (n >= 1) return n.toFixed(4);
+      return n.toFixed(5);
+    }
+
+    async function apiPost(url) {
+      try {
+        await fetch(url, { method: "POST" });
+        await refresh();
+      } catch (e) { console.error(e); }
+    }
+
+    async function togglePause() {
+      if (!latestState) return;
+      await apiPost(latestState.paused ? "/api/resume" : "/api/pause");
+    }
+
+    async function resetDemo() {
+      if (!confirm("Demo hesabı 5.000,00 USDT bakiyeye sıfırlansın mı?")) return;
+      await apiPost("/api/reset");
+    }
+
+    async function closePos(sym) {
+      await apiPost("/api/close/" + encodeURIComponent(sym));
+    }
+
+    async function testTelegram() {
+      try {
+        const res = await fetch("/api/test-telegram", { method: "POST" });
+        const js = await res.json();
+        alert(js.ok ? ("Başarılı: " + js.message) : ("Uyarı: " + js.message));
+        await refresh();
+      } catch (e) { alert("Test isteği başarısız: " + e); }
+    }
+
+    function renderEquitySvg(history, initialCap) {
+      if (!history || history.length < 2) {
+        return `<div style="height:205px;display:flex;align-items:center;justify-content:center;background:#070d1a;border-radius:8px;border:1px solid #1e293b;color:#64748b">
+          İlk kapanan veya anlık fiyat güncellemeleriyle sermaye eğrisi çizilecek (Başlangıç: ${fmtNum(initialCap)} USDT).
+        </div>`;
+      }
+      const vals = history.map(x => Number(x.equity));
+      const w = 680, h = 205, pad = 24;
+      const mn = Math.min(...vals, initialCap * 0.995);
+      const mx = Math.max(...vals, initialCap * 1.005);
+      const span = Math.max(mx - mn, 1);
+      const pts = vals.map((v, i) => {
+        const x = pad + (w - 2 * pad) * (i / (vals.length - 1));
+        const y = h - pad - (h - 2 * pad) * ((v - mn) / span);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(" ");
+      const yBase = h - pad - (h - 2 * pad) * ((initialCap - mn) / span);
+      const last = vals[vals.length - 1];
+      const col = last >= initialCap ? "#22c55e" : "#ef4444";
+      return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="background:#070d1a;border:1px solid #1e293b;border-radius:8px">
+        <line x1="${pad}" y1="${yBase.toFixed(1)}" x2="${w-pad}" y2="${yBase.toFixed(1)}" stroke="#475569" stroke-dasharray="4,4"/>
+        <polyline fill="none" stroke="${col}" stroke-width="2.4" points="${pts}"/>
+        <text x="${pad+4}" y="16" fill="#94a3b8" font-size="11.5" font-family="monospace">Min: ${fmtNum(mn)} $ · Max: ${fmtNum(mx)} $ · Güncel: ${fmtNum(last)} $</text>
+      </svg>`;
+    }
+
+    function render(data) {
+      latestState = data;
+      const pill = document.getElementById("statusPill");
+      const bootB = document.getElementById("bootBanner");
+      const cbB = document.getElementById("cbBanner");
+      const pauseBtn = document.getElementById("pauseBtn");
+
+      if (data.boot_status !== "LIVE_RUNNING") {
+        pill.className = "pill pill-boot";
+        pill.innerHTML = `<span class="dot"></span> ${data.boot_status}`;
+        bootB.style.display = "block";
+      } else if (data.paused) {
+        pill.className = "pill pill-paused";
+        pill.innerHTML = `<span class="dot"></span> DURAKLATILDI`;
+        bootB.style.display = "none";
+      } else {
+        pill.className = "pill pill-live";
+        pill.innerHTML = `<span class="dot"></span> CANLI · Gate.io USDT-M`;
+        bootB.style.display = "none";
+      }
+      pauseBtn.textContent = data.paused ? "Devam Et" : "Duraklat";
+      const tgBtn = document.getElementById("tgBtn");
+      tgBtn.textContent = data.telegram_enabled ? "Telegram: Aktif (Test)" : "Telegram: Kapalı (Test)";
+      tgBtn.style.borderColor = data.telegram_enabled ? "rgba(34,197,94,0.45)" : "#334155";
+      cbB.style.display = data.circuit_tripped ? "block" : "none";
+
+      // BTC Regime pill
+      const bz = Number(data.btc_trend_z || 0);
+      let regText = "NÖTR (Long & Short Aktif)";
+      if (bz < -1.2) regText = "SERT DÜŞÜŞ (Sadece Short)";
+      else if (bz > 1.2) regText = "SERT YÜKSELİŞ (Sadece Long)";
+      document.getElementById("regimePill").textContent = `BTC 24s Rejim: ${bz >= 0 ? "+" : ""}${bz.toFixed(2)}σ · ${regText}`;
+
+      // Countdown
+      const secLeft = Math.max(0, Math.round((data.next_scan_epoch || 0) - Date.now() / 1000));
+      const mm = String(Math.floor(secLeft / 60)).padStart(2, "0");
+      const ss = String(secLeft % 60).padStart(2, "0");
+      document.getElementById("countdownTxt").textContent = data.scan_in_progress ? "5dk Bar Taranıyor..." : `Sonraki 5dk Tarama: ${mm}:${ss}`;
+      document.getElementById("lastTickTxt").textContent = `Son fiyat: ${(data.last_price_ts || "--").slice(11, 19)} UTC`;
+
+      // KPIs
+      const totEq = Number(data.total_equity);
+      const initCap = Number(data.initial_capital);
+      const retPct = ((totEq / Math.max(initCap, 1)) - 1) * 100;
+      const unreal = Number(data.unrealized_pnl_usdt || 0);
+      const todayPnl = Number(data.today_pnl_usdt || 0);
+      const st = data.stats || { total_trades: 0, wins: 0, profit_factor: 0 };
+
+      const elEq = document.getElementById("kpiTotalEq");
+      elEq.textContent = `${fmtNum(totEq)} $`;
+      elEq.className = "val mono " + (retPct >= 0 ? "pos" : "neg");
+      document.getElementById("kpiRet").textContent = `Başlangıç: ${fmtNum(initCap)} $ (${retPct >= 0 ? "+" : ""}${retPct.toFixed(2)}%)`;
+
+      const elUnr = document.getElementById("kpiUnreal");
+      elUnr.textContent = `${unreal >= 0 ? "+" : ""}${fmtNum(unreal)} $`;
+      elUnr.className = "val mono " + (unreal >= 0 ? "pos" : "neg");
+      document.getElementById("kpiUnrealSub").textContent = `${data.open_positions.length} açık pozisyon`;
+
+      const elTod = document.getElementById("kpiToday");
+      elTod.textContent = `${todayPnl >= 0 ? "+" : ""}${fmtNum(todayPnl)} $`;
+      elTod.className = "val mono " + (todayPnl >= 0 ? "pos" : "neg");
+      document.getElementById("kpiTodaySub").textContent = `Devre Kesici Limiti: ${(data.daily_dd_kill_pct * 100).toFixed(1)}%`;
+
+      const wr = st.total_trades > 0 ? (100 * st.wins / st.total_trades) : 0;
+      document.getElementById("kpiWrPf").textContent = `${wr.toFixed(1)}% / ${Number(st.profit_factor || 0).toFixed(2)}`;
+      document.getElementById("kpiCounts").textContent = `${st.total_trades} işlem (${st.wins} Kâr / ${st.total_trades - st.wins} Zarar)`;
+
+      document.getElementById("kpiExp").textContent = `${data.open_positions.length} / ${data.max_concurrent}`;
+      document.getElementById("kpiExpSub").textContent = `Brüt Maruziyet: ${Number(data.gross_exposure || 0).toFixed(2)}x / ${data.max_gross_exposure}x`;
+      document.getElementById("openCountBadge").textContent = `(${data.open_positions.length}/${data.max_concurrent})`;
+
+      document.getElementById("kpiDD").textContent = `${Number(data.max_dd_pct || 0).toFixed(2)}%`;
+      document.getElementById("kpiPeak").textContent = `Zirve: ${fmtNum(data.peak_equity)} $`;
+      document.getElementById("eqStats").textContent = `Gerçekleşen: ${fmtNum(data.realized_equity)} USDT`;
+
+      // Open positions
+      const openBody = document.getElementById("openBody");
+      if (!data.open_positions.length) {
+        openBody.innerHTML = `<tr><td colspan="12" style="text-align:center" class="muted">Şu an açık pozisyon yok — 16 paritede gerçek OI erimesi + tasfiye akışı (5/5 kapı) bekleniyor.</td></tr>`;
+      } else {
+        openBody.innerHTML = data.open_positions.map(p => {
+          const isLong = p.side === 1;
+          const cls = p.unreal_usdt >= 0 ? "pos" : "neg";
+          // Progress from SL (0%) to TP (100%)
+          const denom = Math.abs(p.tp_px - p.sl_px) || 1e-9;
+          const frac = isLong ? (p.cur_px - p.sl_px) / denom : (p.sl_px - p.cur_px) / denom;
+          const pct = Math.max(2, Math.min(100, frac * 100));
+          const barCol = p.unreal_usdt >= 0 ? "#22c55e" : "#ef4444";
+          return `<tr>
+            <td><b>${p.symbol}</b></td>
+            <td><span class="${isLong ? "side-long" : "side-short"}">${isLong ? "LONG" : "SHORT"}</span></td>
+            <td class="mono">${fmtPx(p.entry_px)}</td>
+            <td class="mono"><b>${fmtPx(p.cur_px)}</b></td>
+            <td class="mono pos">${fmtPx(p.tp_px)}</td>
+            <td class="mono neg">${fmtPx(p.sl_px)}</td>
+            <td class="mono">${fmtNum(p.notional_usdt, 0)} $</td>
+            <td><div class="prog-track"><div class="prog-fill" style="width:${pct.toFixed(0)}%;background:${barCol}"></div></div></td>
+            <td class="mono ${cls}"><b>${p.unreal_bps >= 0 ? "+" : ""}${p.unreal_bps.toFixed(1)} bp (${p.unreal_usdt >= 0 ? "+" : ""}${fmtNum(p.unreal_usdt)} $)</b></td>
+            <td class="mono">${p.mins_left} dk</td>
+            <td class="muted" style="font-size:11px">${p.signal_reason}</td>
+            <td><button class="btn-danger btn-sm" onclick="closePos('${p.symbol}')">Kapat</button></td>
+          </tr>`;
+        }).join("");
+      }
+
+      // Equity SVG
+      document.getElementById("eqSvgWrap").innerHTML = renderEquitySvg(data.equity_history, initCap);
+
+      // Logs
+      const logBox = document.getElementById("logBox");
+      logBox.innerHTML = (data.events || []).slice().reverse().map(ev => {
+        return `<div class="log-row"><span class="log-ts">${(ev.ts || "").slice(11, 19)}</span><span class="log-tag tag-${ev.tag || "SYS"}">[${ev.tag || "SYS"}]</span><span>${ev.msg}</span></div>`;
+      }).join("") || `<div class="muted">Kayıt bekleniyor...</div>`;
+
+      // Radar
+      const radarBody = document.getElementById("radarBody");
+      if (data.radar && data.radar.length) {
+        radarBody.innerHTML = data.radar.map(r => {
+          const oiCls = r.oi15_pct <= -0.55 ? "pos" : "";
+          const liqCls = r.liq_z <= -1.4 ? "neg" : (r.liq_z >= 1.4 ? "pos" : "");
+          const vrCls = r.vr >= 0.68 ? "pos" : "muted";
+          const volCls = r.vol_bps >= 12 ? "pos" : "muted";
+          const r15Cls = r.r15_pct >= 0 ? "pos" : "neg";
+          return `<tr>
+            <td><b>${r.symbol}</b></td>
+            <td class="mono">${fmtPx(r.price)}</td>
+            <td class="mono ${r15Cls}">${r.r15_pct >= 0 ? "+" : ""}${r.r15_pct.toFixed(2)}%</td>
+            <td class="mono ${oiCls}"><b>${r.oi15_pct >= 0 ? "+" : ""}${r.oi15_pct.toFixed(2)}%</b></td>
+            <td class="mono ${liqCls}"><b>${r.liq_z >= 0 ? "+" : ""}${r.liq_z.toFixed(2)}</b></td>
+            <td class="mono ${vrCls}">${r.vr.toFixed(2)}</td>
+            <td class="mono ${volCls}">${r.vol_bps.toFixed(1)}</td>
+            <td class="mono">${r.perp_ofi >= 0 ? "+" : ""}${r.perp_ofi.toFixed(2)}</td>
+            <td class="mono ${r.vol_surge >= 1.4 ? "pos" : ""}">${r.vol_surge.toFixed(2)}x</td>
+            <td><span class="ready-badge r-${r.gates_ok}">${r.gates_ok}/5</span></td>
+          </tr>`;
+        }).join("");
+      }
+
+      // Closed Trades
+      const closedBody = document.getElementById("closedBody");
+      if (!data.closed_trades || !data.closed_trades.length) {
+        closedBody.innerHTML = `<tr><td colspan="11" style="text-align:center" class="muted">Henüz kapanan işlem yok — bot 5.000 USDT demo hesabıyla otomatik izlemede.</td></tr>`;
+      } else {
+        closedBody.innerHTML = data.closed_trades.map(t => {
+          const isLong = t.side === "LONG";
+          const cls = Number(t.net_pnl_usdt) >= 0 ? "pos" : "neg";
+          return `<tr>
+            <td class="mono">${String(t.exit_ts).slice(5, 19).replace("T", " ")}</td>
+            <td><b>${t.symbol}</b></td>
+            <td><span class="${isLong ? "side-long" : "side-short"}">${t.side}</span></td>
+            <td class="mono">${fmtPx(t.entry_px)}</td>
+            <td class="mono">${fmtPx(t.exit_px)}</td>
+            <td class="mono">${fmtNum(t.notional_usdt, 0)} $</td>
+            <td class="mono">${t.hold_mins} dk</td>
+            <td><b>${t.exit_reason}</b></td>
+            <td class="mono ${cls}">${Number(t.net_bps) >= 0 ? "+" : ""}${Number(t.net_bps).toFixed(1)}</td>
+            <td class="mono ${cls}"><b>${Number(t.net_pnl_usdt) >= 0 ? "+" : ""}${fmtNum(t.net_pnl_usdt)} $</b></td>
+            <td class="mono">${fmtNum(t.equity_after)} $</td>
+          </tr>`;
+        }).join("");
+      }
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("/api/state", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          render(data);
+        }
+      } catch (e) { console.error("poll err", e); }
+    }
+
+    refresh();
+    setInterval(refresh, 3000);
+  </script>
+</body>
+</html>
