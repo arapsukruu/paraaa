@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: core-oi-cascade-demo-bot
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DEMO_CAPITAL
+        value: "5000"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
